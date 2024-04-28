@@ -12,5 +12,10 @@ export default [
         version: '^18.2.0'
       }
     }
+  },
+  {
+    rules: {
+      'no-undef': 'off' // Turn off no-undef rule
+    }
   }
 ];

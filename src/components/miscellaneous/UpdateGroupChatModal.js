@@ -17,11 +17,12 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
-import { ChatState } from "../../Context/ContextProvider";
+import { ChatState } from "../../Context/ChatProvider";
 import UserBadgeItem from "../UserAvatar/UserBadgeItem";
 import axios from "axios";
 import UserListItem from "../UserAvatar/UserListItem";
 import PropTypes from 'prop-types';
+import { LOCAL_API_URL, PRODUCTION_API_URL } from "../../config/config";
 
 UpdateGroupChatModal.propTypes = {
   fetchAgain: PropTypes.any.isRequired,
@@ -38,6 +39,8 @@ function UpdateGroupChatModal({ fetchAgain, setFetchAgain,fetchMessages }) {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { selectedChat, setSelectedChat, user } = ChatState();
+
+  const baseURL = process.env.NODE_ENV === 'production' ? PRODUCTION_API_URL : LOCAL_API_URL;
 
   const handleAddUser = async (invitedUser) => {
     if (selectedChat.users.find((u) => u._id === invitedUser._id)) {
@@ -70,7 +73,7 @@ function UpdateGroupChatModal({ fetchAgain, setFetchAgain,fetchMessages }) {
       };
 
       const { data } = await axios.put(
-        `https://chatapplication-service.onrender.com/api/chat/groupadd`,
+        `${baseURL}/api/chat/groupadd`,
         {
           chatId: selectedChat._id,
           userId: invitedUser._id,
@@ -114,7 +117,7 @@ function UpdateGroupChatModal({ fetchAgain, setFetchAgain,fetchMessages }) {
         },
       };
       const { data } = await axios.put(
-        `https://chatapplication-service.onrender.com/api/chat/groupremove`,
+        `${baseURL}/api/chat/groupremove`,
         {
           chatId: selectedChat._id,
           userId: userToRemove._id,
@@ -153,7 +156,7 @@ function UpdateGroupChatModal({ fetchAgain, setFetchAgain,fetchMessages }) {
       };
 
       const { data } = await axios.put(
-        `https://chatapplication-service.onrender.com/api/chat/rename`,
+        `${baseURL}/api/chat/rename`,
         {
           chatId: selectedChat._id,
           chatName: groupChatName,
@@ -193,10 +196,9 @@ function UpdateGroupChatModal({ fetchAgain, setFetchAgain,fetchMessages }) {
         },
       };
       const { data } = await axios.get(
-        `https://chatapplication-service.onrender.com/api/user?search=${search}`,
+        `${baseURL}/api/user?search=${search}`,
         config
       );
-      //   console.log(data);
       setLoading(false);
       setSearchResult(data);
     } catch (error) {

@@ -5,12 +5,13 @@ import {
   Input,
   InputGroup,
   InputRightElement,
-  VStack,
-} from "@chakra-ui/react";
-import { useToast } from "@chakra-ui/react";
-import React, { useState } from "react";
-import axios from "axios";
-import { useHistory } from "react-router-dom";
+  VStack
+} from '@chakra-ui/react';
+import { useToast } from '@chakra-ui/react';
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useHistory } from 'react-router-dom';
+import { LOCAL_API_URL, PRODUCTION_API_URL } from '../../config/config';
 
 export default function Signup() {
   const [show, setShow] = useState(false);
@@ -23,72 +24,68 @@ export default function Signup() {
   const toast = useToast();
   const history = useHistory();
 
+  const baseURL = process.env.NODE_ENV === 'production' ? PRODUCTION_API_URL : LOCAL_API_URL;
+
   const handleClick = () => {
     setShow(!show);
   };
-
- 
-
 
   const submitHandler = async () => {
     setLoading(true);
     if (!name || !email || !password || !confirmPassword) {
       toast({
-        title: "Please Fill all the Fields",
-        status: "warning",
+        title: 'Please Fill all the Fields',
+        status: 'warning',
         duration: 2000,
         isClosable: true,
-        position: "top",
+        position: 'top'
       });
       setLoading(false);
       return;
     }
     if (password !== confirmPassword) {
       toast({
-        title: "Password Do not match",
-        status: "warning",
+        title: 'Password Do not match',
+        status: 'warning',
         duration: 2000,
         isClosable: true,
-        position: "top",
+        position: 'top'
       });
     }
-    console.log(name, email, password, pic);
     try {
       const config = {
         headers: {
-          "Content-type": "application/json",
-        },
+          'Content-type': 'application/json'
+        }
       };
-      const {data} = await axios.post(
-        "https://chatapplication-service.onrender.com/api/user",
+      const { data } = await axios.post(
+        `${baseURL}/api/user`,
         {
-          name, 
+          name,
           email,
           password,
-          pic,
+          pic
         },
         config
       );
-      // console.log(data)
       toast({
-        title: "Registration Successful",
-        status: "success",
+        title: 'Registration Successful',
+        status: 'success',
         duration: 2000,
         isClosable: true,
-        position: "top",
+        position: 'top'
       });
-      localStorage.setItem("UserInfo", JSON.stringify(data));
+      localStorage.setItem('UserInfo', JSON.stringify(data));
       setLoading(false);
-      history.push('/chats');
-
+      history.push('/');
     } catch (err) {
       toast({
-        title: "Error Occured!",
+        title: 'Error Occured!',
         description: err.response.data.message,
-        status: "error",
+        status: 'error',
         duration: 5000,
         isClosable: true,
-        position: "top",
+        position: 'top'
       });
       setLoading(false);
     }
@@ -98,46 +95,44 @@ export default function Signup() {
     setLoading(true);
     if (pics === undefined) {
       toast({
-        title: "Please select an Image",
-        status: "warning",
+        title: 'Please select an Image',
+        status: 'warning',
         duration: 5000,
         isClosable: true,
-        position: "top",
+        position: 'top'
       });
       return;
     }
-    if (pics.type === "image/jpeg" || pics.type === "image/png") {
+    if (pics.type === 'image/jpeg' || pics.type === 'image/png') {
       const data = new FormData();
-      data.append("file", pics);
-      data.append("upload_preset", "Chat-App");
-      data.append("cloud_name", "somanathbarik");
-      fetch("https://api.cloudinary.com/v1_1/somanathbarik/image/upload", {
-        method: "post",
-        body: data,
+      data.append('file', pics);
+      data.append('upload_preset', 'Chat-App');
+      data.append('cloud_name', 'somanathbarik');
+      fetch('https://api.cloudinary.com/v1_1/somanathbarik/image/upload', {
+        method: 'post',
+        body: data
       })
         .then((res) => res.json())
         .then((data) => {
           setPic(data.url.toString());
-          console.log(data.url.toString());
           setLoading(false);
         })
         .catch((err) => {
-          console.log(err);
+          console.error(err);
           setLoading(false);
         });
     } else {
       toast({
-        title: "Please select an Image",
-        status: "warning",
+        title: 'Please select an Image',
+        status: 'warning',
         duration: 5000,
         isClosable: true,
-        position: "top",
+        position: 'top'
       });
       setLoading(false);
       return;
     }
   };
-
 
   return (
     <VStack spacing="2px" color="black">
@@ -162,13 +157,13 @@ export default function Signup() {
         <InputGroup>
           <Input
             fontSize="sm"
-            type={show ? "text" : "password"}
+            type={show ? 'text' : 'password'}
             placeholder="Enter Your Password"
             onChange={(e) => setPassword(e.target.value)}
           />
           <InputRightElement width="4.5rem">
             <Button h="1.75rem" size="sm" onClick={handleClick}>
-              {show ? "Hide" : "Show"}
+              {show ? 'Hide' : 'Show'}
             </Button>
           </InputRightElement>
         </InputGroup>
@@ -178,13 +173,13 @@ export default function Signup() {
         <InputGroup>
           <Input
             fontSize="sm"
-            type={show ? "text" : "password"}
+            type={show ? 'text' : 'password'}
             placeholder="Enter Your Password again"
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
           <InputRightElement width="4.5rem">
             <Button h="1.75rem" size="sm" onClick={handleClick}>
-              {show ? "Hide" : "Show"}
+              {show ? 'Hide' : 'Show'}
             </Button>
           </InputRightElement>
         </InputGroup>
@@ -206,8 +201,7 @@ export default function Signup() {
         width="100%"
         style={{ marginTop: 15 }}
         onClick={submitHandler}
-        isLoading={loading}
-      >
+        isLoading={loading}>
         Sign Up
       </Button>
     </VStack>

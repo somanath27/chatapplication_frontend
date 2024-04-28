@@ -17,19 +17,20 @@ import {
   Text,
   Tooltip,
   useDisclosure,
-  useToast,
-} from "@chakra-ui/react";
-import React, { useState } from "react";
-import { BellIcon, ChevronDownIcon } from "@chakra-ui/icons";
-import { ChatState } from "../../Context/ContextProvider";
-import ProfileModal from "./ProfileModal";
-import { useHistory } from "react-router-dom";
-import axios from "axios";
-import ChatLoading from "../ChatLoading";
-import UserListItem from "../UserAvatar/UserListItem";
+  useToast
+} from '@chakra-ui/react';
+import React, { useState } from 'react';
+import { BellIcon, ChevronDownIcon } from '@chakra-ui/icons';
+import { ChatState } from '../../Context/ChatProvider';
+import ProfileModal from './ProfileModal';
+import { useHistory } from 'react-router-dom';
+import axios from 'axios';
+import ChatLoading from '../ChatLoading';
+import UserListItem from '../UserAvatar/UserListItem';
+import { LOCAL_API_URL, PRODUCTION_API_URL } from '../../config/config';
 
 function SideDrawer() {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingChat, setLoadingChat] = useState();
@@ -39,19 +40,21 @@ function SideDrawer() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
 
+  const baseURL = process.env.NODE_ENV === 'production' ? PRODUCTION_API_URL : LOCAL_API_URL;
+
   const logoutHandler = () => {
-    localStorage.removeItem("UserInfo");
-    history.push("/");
+    localStorage.removeItem('UserInfo');
+    history.push('/');
   };
 
   const handleSearch = async () => {
     if (!search) {
       toast({
-        title: "Please Enter the User",
-        status: "warning",
+        title: 'Please Enter the User',
+        status: 'warning',
         duration: 3000,
         isClosable: true,
-        position: "top-left",
+        position: 'top-left'
       });
       return;
     }
@@ -59,24 +62,21 @@ function SideDrawer() {
       setLoading(true);
       const config = {
         headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
+          Authorization: `Bearer ${user.token}`
+        }
       };
 
-      const { data } = await axios.get(
-        `https://chatapplication-service.onrender.com/api/user?search=${search}`,
-        config
-      );
+      const { data } = await axios.get(`${baseURL}/api/user?search=${search}`, config);
       setLoading(false);
       setSearchResult(data);
     } catch (err) {
       toast({
-        title: "Error Occured!",
-        description: "Failed to load the search results",
-        status: "error",
+        title: 'Error Occured!',
+        description: 'Failed to load the search results',
+        status: 'error',
         duration: 5000,
         isClosable: true,
-        position: "bottom-left",
+        position: 'bottom-left'
       });
       return;
     }
@@ -88,25 +88,28 @@ function SideDrawer() {
       setLoading(true);
       const config = {
         headers: {
-          "Content-type": "application/json",
-          Authorization: `Bearer ${user.token}`,
-        },
+          'Content-type': 'application/json',
+          Authorization: `Bearer ${user.token}`
+        }
       };
-      const { data } = await axios.post(`https://chatapplication-service.onrender.com/api/chat`,{ userId },config);
+      const { data } = await axios.post(
+        `${baseURL}/api/chat`,
+        { userId },
+        config
+      );
 
-      if (!chats.find((c) => c._id === data._id))
-       setChats([data, ...chats]);
+      if (!chats.find((c) => c._id === data._id)) setChats([data, ...chats]);
       setSelectedChat(data);
       setLoadingChat(false);
       onClose();
     } catch (error) {
       toast({
-        title: "Error Occured!",
-        description: "Failed to load the search results",
-        status: "error",
+        title: 'Error Occured!',
+        description: 'Failed to load the search results',
+        status: 'error',
         duration: 5000,
         isClosable: true,
-        position: "bottom-left",
+        position: 'bottom-left'
       });
       return;
     }
@@ -121,12 +124,11 @@ function SideDrawer() {
         bg="white"
         w="100%"
         p="5px 10px 5px 10px"
-        borderWidth="5px"
-      >
+        borderWidth="5px">
         <Tooltip label="search user to chat" hasArrow placement="bottom-end">
           <Button variant="ghost" onClick={onOpen}>
             <i className="fa-solid fa-magnifying-glass"></i>
-            <Text display={{ base: "none", md: "flex" }} px="4">
+            <Text display={{ base: 'none', md: 'flex' }} px="4">
               Search User
             </Text>
           </Button>
@@ -143,12 +145,7 @@ function SideDrawer() {
           </Menu>
           <Menu>
             <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
-              <Avatar
-                size="sm"
-                cursor="pointer"
-                name={user.name}
-                src={user.pic}
-              />
+              <Avatar size="sm" cursor="pointer" name={user.name} src={user.pic} />
             </MenuButton>
             <MenuList>
               <ProfileModal user={user}>
@@ -176,8 +173,7 @@ function SideDrawer() {
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value);
-                }}
-              ></Input>
+                }}></Input>
               <Button onClick={handleSearch}>Go</Button>
             </Box>
             {loading ? (

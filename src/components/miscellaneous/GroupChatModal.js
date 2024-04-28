@@ -10,30 +10,33 @@ import {
   ModalHeader,
   ModalOverlay,
   useDisclosure,
-  useToast,
-} from "@chakra-ui/react";
-import React, { useState } from "react";
-import { FormControl } from "@chakra-ui/form-control";
-import { ChatState } from "../../Context/ContextProvider";
-import axios from "axios";
-import UserListItem from "../UserAvatar/UserListItem";
-import UserBadgeItem from "../UserAvatar/UserBadgeItem";
-import PropTypes from "prop-types";
+  useToast
+} from '@chakra-ui/react';
+import React, { useState } from 'react';
+import { FormControl } from '@chakra-ui/form-control';
+import { ChatState } from '../../Context/ChatProvider';
+import axios from 'axios';
+import UserListItem from '../UserAvatar/UserListItem';
+import UserBadgeItem from '../UserAvatar/UserBadgeItem';
+import PropTypes from 'prop-types';
+import { LOCAL_API_URL, PRODUCTION_API_URL } from '../../config/config';
 
 GroupChatModal.propTypes = {
-  children: PropTypes.any.isRequired,
+  children: PropTypes.any.isRequired
 };
 function GroupChatModal({ children }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [groupChatName, setGroupChatName] = useState();
   const [selectedUsers, setSelectedUsers] = useState([]);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const toast = useToast();
 
   const { user, chats, setChats } = ChatState();
+
+  const baseURL = process.env.NODE_ENV === 'production' ? PRODUCTION_API_URL : LOCAL_API_URL;
 
   const handleSearch = async (query) => {
     setSearch(query);
@@ -45,25 +48,21 @@ function GroupChatModal({ children }) {
       setLoading(true);
       const config = {
         headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
+          Authorization: `Bearer ${user.token}`
+        }
       };
 
-      const { data } = await axios.get(
-        `https://chatapplication-service.onrender.com/api/user?search=${search}`,
-        config
-      );
-      // console.log(data);
+      const { data } = await axios.get(`${baseURL}/api/user?search=${search}`, config);
       setLoading(false);
       setSearchResult(data);
     } catch (error) {
       toast({
-        title: "Error Occured!",
-        description: "Failed to load the search results",
-        status: "error",
+        title: 'Error Occured!',
+        description: 'Failed to load the search results',
+        status: 'error',
         duration: 5000,
         isClosable: true,
-        position: "bottom-left",
+        position: 'bottom-left'
       });
     }
   };
@@ -71,27 +70,27 @@ function GroupChatModal({ children }) {
   const handleSubmit = async () => {
     if (!groupChatName || !selectedUsers) {
       toast({
-        title: "Please fill all the fields",
-        description: "Failed to load the search results",
-        status: "warning",
+        title: 'Please fill all the fields',
+        description: 'Failed to load the search results',
+        status: 'warning',
         duration: 5000,
         isClosable: true,
-        position: "top",
+        position: 'top'
       });
     }
 
     try {
       const config = {
         headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
+          Authorization: `Bearer ${user.token}`
+        }
       };
 
       const { data } = await axios.post(
-        `http://localhost:5000/api/chat/group`,
+        `${baseURL}/api//chat/group`,
         {
           name: groupChatName,
-          users: JSON.stringify(selectedUsers.map((u) => u._id)),
+          users: JSON.stringify(selectedUsers.map((u) => u._id))
         },
         config
       );
@@ -99,39 +98,37 @@ function GroupChatModal({ children }) {
       setChats([data, ...chats]);
       onClose();
       toast({
-        title: "New Group chat Created",
-        description: "Failed to load the search results",
-        status: "success",
+        title: 'New Group chat Created',
+        description: 'Failed to load the search results',
+        status: 'success',
         duration: 5000,
         isClosable: true,
-        position: "top",
+        position: 'top'
       });
     } catch (error) {
       toast({
-        title: "Failed to create the chat",
+        title: 'Failed to create the chat',
         description: error.response.data.message,
-        status: "error",
+        status: 'error',
         duration: 2000,
         isClosable: true,
-        position: "bottom",
+        position: 'bottom'
       });
     }
   };
 
   const handleDelete = (deletedUser) => {
-    setSelectedUsers(
-      selectedUsers.filter((sel) => sel._id !== deletedUser._id)
-    );
+    setSelectedUsers(selectedUsers.filter((sel) => sel._id !== deletedUser._id));
   };
 
   const handleGroup = (userToadd) => {
     if (selectedUsers.includes(userToadd)) {
       toast({
-        title: "User Already added",
-        status: "warning",
+        title: 'User Already added',
+        status: 'warning',
         duration: 5000,
         isClosable: true,
-        position: "top",
+        position: 'top'
       });
       return;
     }
@@ -148,8 +145,7 @@ function GroupChatModal({ children }) {
             fontSize="35px"
             fontFamily="Work sans"
             display="flex"
-            justifyContent="center"
-          >
+            justifyContent="center">
             Create Group Chat
           </ModalHeader>
           <ModalCloseButton />
@@ -172,11 +168,7 @@ function GroupChatModal({ children }) {
             {/* selected users */}
             <Box w="100%" display="flex" flexWrap="wrap">
               {selectedUsers.map((u, i) => (
-                <UserBadgeItem
-                  key={i}
-                  user={u}
-                  handleFunction={() => handleDelete(u)}
-                />
+                <UserBadgeItem key={i} user={u} handleFunction={() => handleDelete(u)} />
               ))}
             </Box>
 

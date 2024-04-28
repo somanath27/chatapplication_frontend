@@ -18,10 +18,9 @@ import PropTypes from 'prop-types';
 
 ProfileModal.propTypes = {
   user: PropTypes.any.isRequired,
-  children: PropTypes.any.isRequired,
+  children: PropTypes.any,
 };
 function ProfileModal({ user, children }) {
-    // console.log(user)
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <>
