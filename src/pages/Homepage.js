@@ -11,20 +11,21 @@ import {
 import React, { useEffect } from "react";
 import Login from "../components/Auth/Login";
 import Signup from "../components/Auth/Signup";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 
 export default function Homepage() {
-  const history= useHistory();
+  const navigate= useNavigate();
   useEffect(()=>
   {
     const user=JSON.parse(localStorage.getItem("UserInfo"));
 
     if(user)
     {
-        history.push("/chats");
+      navigate("/chats");
+      
     }
-  },[history]);
+  },[navigate]);
 
   return (
     <Container maxW="xl" centerContent>
@@ -32,34 +33,32 @@ export default function Homepage() {
         d="flex"
         justifyContent="center"
         p={3}
-        bg={"white"}
+        bg={"#900C3F"}
         w={"90%"}
         m="30px 0 15px 0"
         borderRadius="lg"
-        borderWidth="1px"
       >
         <Text
           fontSize="3xl"
           fontFamily="Work sans"
-          color={"black"}
+          color={"white"}
           textAlign="center"
         >
-          Talk-A-Tive
+          ChiT-Chatter
         </Text>
       </Box>
       <Box
-        bg="white"
+        bg="#900C3F"
         w="90%"
         p={2}
         marginBottom="1em"
-        color="black"
+        color="white"
         borderRadius="md"
-        borderWidth="1px"
       >
-        <Tabs variant="soft-rounded" colorScheme="green">
+        <Tabs variant="soft-rounded">
           <TabList mb="1em">
-            <Tab width="50%">Login</Tab>
-            <Tab width="50%">Sign Up</Tab>
+            <Tab width="50%" color={"wheat"} fontSize={"large"}>Login</Tab>
+            <Tab width="50%" color={"wheat"}>Sign Up</Tab>
           </TabList>
           <TabPanels>
             <TabPanel>

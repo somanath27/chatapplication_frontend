@@ -23,7 +23,7 @@ import React, { useState } from 'react';
 import { BellIcon, ChevronDownIcon } from '@chakra-ui/icons';
 import { ChatState } from '../../Context/ChatProvider';
 import ProfileModal from './ProfileModal';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ChatLoading from '../ChatLoading';
 import UserListItem from '../UserAvatar/UserListItem';
@@ -35,7 +35,7 @@ function SideDrawer() {
   const [loading, setLoading] = useState(false);
   const [loadingChat, setLoadingChat] = useState();
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const { user, setSelectedChat, chats, setChats } = ChatState();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
@@ -44,7 +44,7 @@ function SideDrawer() {
 
   const logoutHandler = () => {
     localStorage.removeItem('UserInfo');
-    history.push('/');
+    navigate('/');
   };
 
   const handleSearch = async () => {
@@ -92,11 +92,7 @@ function SideDrawer() {
           Authorization: `Bearer ${user.token}`
         }
       };
-      const { data } = await axios.post(
-        `${baseURL}/api/chat`,
-        { userId },
-        config
-      );
+      const { data } = await axios.post(`${baseURL}/api/chat`, { userId }, config);
 
       if (!chats.find((c) => c._id === data._id)) setChats([data, ...chats]);
       setSelectedChat(data);
@@ -133,8 +129,8 @@ function SideDrawer() {
             </Text>
           </Button>
         </Tooltip>
-        <Text fontSize="2xl" fontFamily="Work sans">
-          TALK-A-TIVE
+        <Text fontSize="3xl" fontFamily="Work sans" color={'black'} textAlign="center">
+          Chit-Chatter
         </Text>
         <div>
           <Menu>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { createContext, useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 ChatProvider.propTypes = {
   children: PropTypes.any
@@ -12,13 +12,14 @@ const ChatContext = createContext();
 function ChatProvider({ children }) {
   const [user, setUser] = useState();
   const [selectedChat, setSelectedChat] = useState();
-  const [chats, setChats] = useState([]);
-  const history = useHistory();
+  const [chats, setChats] = useState();
+  const navigate = useNavigate();
   useEffect(() => {
     const userInfo = JSON.parse(localStorage.getItem('UserInfo'));
+    if(userInfo)
     setUser(userInfo);
-    if (!userInfo) history.push("/");
-  }, [history]);
+    if (!userInfo) navigate('/');
+  },[navigate]);
 
   return (
     <ChatContext.Provider value={{ user, setUser, selectedChat, setSelectedChat, chats, setChats }}>

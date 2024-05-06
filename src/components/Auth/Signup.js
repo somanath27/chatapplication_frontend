@@ -10,7 +10,7 @@ import {
 import { useToast } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { LOCAL_API_URL, PRODUCTION_API_URL } from '../../config/config';
 
 export default function Signup() {
@@ -22,7 +22,7 @@ export default function Signup() {
   const [pic, setPic] = useState();
   const [loading, setLoading] = useState(false);
   const toast = useToast();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const baseURL = process.env.NODE_ENV === 'production' ? PRODUCTION_API_URL : LOCAL_API_URL;
 
@@ -38,7 +38,8 @@ export default function Signup() {
         status: 'warning',
         duration: 2000,
         isClosable: true,
-        position: 'top'
+        position: 'top',
+        colorScheme: 'red'
       });
       setLoading(false);
       return;
@@ -58,16 +59,12 @@ export default function Signup() {
           'Content-type': 'application/json'
         }
       };
-      const { data } = await axios.post(
-        `${baseURL}/api/user`,
-        {
-          name,
-          email,
-          password,
-          pic
-        },
-        config
-      );
+
+      const userData = { name, email, password, pic };
+      const response = await axios.post(`${baseURL}/api/user`, userData, config);
+
+      const { data } = response;
+
       toast({
         title: 'Registration Successful',
         status: 'success',
@@ -75,18 +72,22 @@ export default function Signup() {
         isClosable: true,
         position: 'top'
       });
+
       localStorage.setItem('UserInfo', JSON.stringify(data));
       setLoading(false);
-      history.push('/');
-    } catch (err) {
+      navigate('/chats');
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 'An error occurred';
+
       toast({
-        title: 'Error Occured!',
-        description: err.response.data.message,
+        title: 'Error Occurred!',
+        description: errorMessage,
         status: 'error',
         duration: 5000,
         isClosable: true,
         position: 'top'
       });
+
       setLoading(false);
     }
   };
@@ -135,31 +136,49 @@ export default function Signup() {
   };
 
   return (
-    <VStack spacing="2px" color="black">
+    <VStack spacing="2px" color="white">
       <FormControl id="first-name" isRequired>
-        <FormLabel fontSize="sm">Name</FormLabel>
+        <FormLabel fontSize="sm" color={'white'}>
+          Name
+        </FormLabel>
         <Input
           fontSize="sm"
           placeholder="Enter Your Name"
           onChange={(e) => setName(e.target.value)}
+          _placeholder={{
+            textColor: 'white'
+          }}
+          focusBorderColor="white"
         />
       </FormControl>
       <FormControl id="email" isRequired>
-        <FormLabel fontSize="sm">Email</FormLabel>
+        <FormLabel fontSize="sm" color={'white'}>
+          Email
+        </FormLabel>
         <Input
           fontSize="sm"
           placeholder="Enter Your Email"
           onChange={(e) => setEmail(e.target.value)}
+          _placeholder={{
+            textColor: 'white'
+          }}
+          focusBorderColor="white"
         />
       </FormControl>
       <FormControl id="password" isRequired>
-        <FormLabel fontSize="sm">Password</FormLabel>
+        <FormLabel fontSize="sm" color={'white'}>
+          Password
+        </FormLabel>
         <InputGroup>
           <Input
             fontSize="sm"
             type={show ? 'text' : 'password'}
             placeholder="Enter Your Password"
             onChange={(e) => setPassword(e.target.value)}
+            _placeholder={{
+              textColor: 'white'
+            }}
+            focusBorderColor="white"
           />
           <InputRightElement width="4.5rem">
             <Button h="1.75rem" size="sm" onClick={handleClick}>
@@ -169,13 +188,19 @@ export default function Signup() {
         </InputGroup>
       </FormControl>
       <FormControl id="confirm-password" isRequired>
-        <FormLabel fontSize="sm">Confirm Password</FormLabel>
+        <FormLabel fontSize="sm" color={'white'}>
+          Confirm Password
+        </FormLabel>
         <InputGroup>
           <Input
             fontSize="sm"
             type={show ? 'text' : 'password'}
             placeholder="Enter Your Password again"
             onChange={(e) => setConfirmPassword(e.target.value)}
+            _placeholder={{
+              textColor: 'white'
+            }}
+            focusBorderColor="white"
           />
           <InputRightElement width="4.5rem">
             <Button h="1.75rem" size="sm" onClick={handleClick}>
@@ -186,7 +211,9 @@ export default function Signup() {
       </FormControl>
 
       <FormControl id="pic">
-        <FormLabel fontSize="sm">Upload your picture</FormLabel>
+        <FormLabel fontSize="sm" color={'white'}>
+          Upload your picture
+        </FormLabel>
         <Input
           fontSize="sm"
           type="file"
@@ -196,8 +223,8 @@ export default function Signup() {
         />
       </FormControl>
       <Button
-        fontSize="sm"
-        colorScheme="blue"
+        fontSize="large"
+        backgroundColor="white"
         width="100%"
         style={{ marginTop: 15 }}
         onClick={submitHandler}

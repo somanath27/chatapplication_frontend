@@ -9,7 +9,7 @@ import {
   VStack
 } from '@chakra-ui/react';
 import { useToast } from '@chakra-ui/react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { ChatState } from '../../Context/ChatProvider';
 import { PRODUCTION_API_URL, LOCAL_API_URL } from '../../config/config';
@@ -20,7 +20,7 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const toast = useToast();
-  const history = useHistory();
+  const navigate = useNavigate();
   const { setUser } = ChatState();
 
   const baseURL = process.env.NODE_ENV === 'production' ? PRODUCTION_API_URL : LOCAL_API_URL;
@@ -66,7 +66,7 @@ export default function Login() {
       setUser(data);
       localStorage.setItem('UserInfo', JSON.stringify(data));
       setLoading(false);
-      history.push('/chats');
+      navigate('/chats');
     } catch (err) {
       toast({
         title: 'Error Occured!',
@@ -80,7 +80,7 @@ export default function Login() {
     }
   };
   return (
-    <VStack spacing="2px" color="black">
+    <VStack spacing="2px" color="white">
       <FormControl id="login-email" isRequired>
         <FormLabel fontSize="sm">Email</FormLabel>
         <Input
@@ -88,6 +88,10 @@ export default function Login() {
           placeholder="Enter Your Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          _placeholder={{
+            textColor: 'white'
+          }}
+          focusBorderColor='white'
         />
       </FormControl>
       <FormControl id="login-password" isRequired>
@@ -99,6 +103,10 @@ export default function Login() {
             placeholder="Enter Your Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            _placeholder={{
+              textColor: 'white'
+            }}
+            focusBorderColor='white'
           />
           <InputRightElement width="4.5rem">
             <Button h="1.75rem" size="sm" onClick={handleClick}>
@@ -108,8 +116,8 @@ export default function Login() {
         </InputGroup>
       </FormControl>
       <Button
-        fontSize="sm"
-        colorScheme="blue"
+        fontSize="larger"
+        backgroundColor="white"
         width="100%"
         style={{ marginTop: 15 }}
         onClick={submitHandler}
